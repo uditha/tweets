@@ -26,9 +26,9 @@ const HomeStackNavigator = () => {
     screenOptions={{ headerShown: true, headerBackTitleVisible: false,}}
     >
         <Stack.Screen name="Tab" component={TabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Tweets" component={TweetScreen} />
-        <Stack.Screen name="New Tweet" component={NewTweet} />
+        <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: '' }}  />
+        <Stack.Screen name="Tweets" component={TweetScreen} options={{ title: '' }} />
+        <Stack.Screen name="New Tweet" component={NewTweet} options={{ title: '' }} />
       </Stack.Navigator>
   )
 }
