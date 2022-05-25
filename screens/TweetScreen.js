@@ -6,7 +6,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function TweetScreen() {
   return (
     <View style={ styles.container }>
-        <Text>Tweets</Text>
+        <Text>Tweet Screen</Text>
     </View>
   );
 }

@@ -27,7 +27,7 @@ const HomeStackNavigator = () => {
     >
         <Stack.Screen name="Tab" component={TabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: '' }}  />
-        <Stack.Screen name="Tweets" component={TweetScreen} options={{ title: '' }} />
+        <Stack.Screen name="Tweet Screen" component={TweetScreen} options={{ title: '' }} />
         <Stack.Screen name="New Tweet" component={NewTweet} options={{ title: '' }} />
       </Stack.Navigator>
   )
@@ -79,7 +79,7 @@ export default function App() {
       <Drawer.Navigator 
       initialRouteName="Home"
       screenOptions={{ 
-        headerShown: false,
+        headerShown: true,
        }}
       >
         <Drawer.Screen name="Home" component={HomeStackNavigator} />
