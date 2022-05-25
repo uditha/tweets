@@ -4,7 +4,14 @@ import { Feather } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 
 
-export default function TweetScreen() {
+
+export default function TweetScreen({ navigation }) {
+
+  function gotoProfile() {
+    navigation.navigate("Profile")
+  }
+  
+
   return (
     <View style={ styles.container }>
         <View style={styles.profileDetails}>
