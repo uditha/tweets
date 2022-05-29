@@ -13,15 +13,27 @@ export default function HomeScreen({ navigation }) {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [isRefreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(3);
+  const [doneScrolling , setDoneScrolling] = useState(false);
 
   useEffect(() => {
     getAllTweets();
-  } , []);
+  } , [page]);
 
   function getAllTweets(){
-    axios.get('http://localhost/api/tweets')
+    axios.get(`http://localhost/api/tweets?page=${page}`)
     .then(res => {
-      setData(res.data);
+
+      if(page ===1){
+        setData(res.data.data);
+      } else {
+        setData([...data, ...res.data.data]);
+      }
+
+      if(res.data.next_page_url === null){
+        setDoneScrolling(true);
+      }
+
       setLoading(false);
       setRefreshing(false);
     })
@@ -33,8 +45,14 @@ export default function HomeScreen({ navigation }) {
   }
 
   function handleRefresh(){
+    setPage(1);
+    setDoneScrolling(false);
     setRefreshing(true);
     getAllTweets();
+  }
+
+  function handleEndReached(){
+    setPage(page + 1);
   }
 
   function gotoProfile() {
@@ -108,6 +126,10 @@ export default function HomeScreen({ navigation }) {
         ItemSeparatorComponent={ () => <View style={styles.tweetSeparator}></View> }
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0}
+        ListFooterComponent={ () =>  
+        !doneScrolling && (<ActivityIndicator style={{ marginTop: 8 }}size="large" color="#0000ff" /> )}
 
       />
 
