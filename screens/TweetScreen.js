@@ -1,28 +1,56 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 
 
+import axiosConfig from '../helper/axiosConfig';
+import format from 'date-fns/format';
 
-export default function TweetScreen({ navigation }) {
+
+export default function TweetScreen({ route, navigation }) {
+
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
   function gotoProfile() {
     navigation.navigate("Profile")
   }
-  
+
+  const tweetId = route.params.tweetId;
+
+  useEffect(() => {
+    getTweet(tweetId);
+  },[])
+
+  function getTweet(tweetId){
+    axiosConfig.get(`/tweets/${tweetId}`)
+    .then(res => {
+      setData(res.data);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.log(err);
+      setLoading(false);
+    });
+  }
+
 
   return (
     <View style={ styles.container }>
+      { isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <>
         <View style={styles.profileDetails}>
           <View style={styles.flexRow}>
             <TouchableOpacity onPress={ () => gotoProfile()}>
-              <Image source={{uri: 'https://reactjs.org/logo-og.png'}}
+              <Image source={{uri: data.user.avatar }}
             style={styles.avatar} />
             </TouchableOpacity>
             <View style={ styles.nameContainer}>
-              <Text style={ styles.name}>Uditha Tennakoon</Text>
-              <Text style={ styles.handle}>@udimax</Text>
+              <Text style={ styles.name}>{ data.user.name }</Text>
+              <Text style={ styles.handle}>@{ data.user.username }</Text>
             </View>
           </View>
           
@@ -32,15 +60,13 @@ export default function TweetScreen({ navigation }) {
         </View> 
 
         <View style={styles.tweetTextContainer}>
-            <Text style={styles.tweetText}>
-            I’m now 9 hours in Q for petrol;a bowser just came; it’s actually fun to stand in Q b’coz all young people with true brotherhood help each other;we’re treated with tea, bread, dhal &amp; above all,with natural hospitality that SL offers to others
-            </Text>
+            <Text style={styles.tweetText}>{ data.body }</Text>
         </View>
 
         <View 
         style={[styles.flexRow, styles.info ]}>
-        <Text> 7:54 PM · May 24, 2022 </Text>
-        <Text style={ styles.ml4}>·Twitter for iPhone</Text>
+        <Text> { format(new Date(data.created_at), 'MMMM dd, yyyy') } </Text>
+        <Text style={ styles.ml4}>Twitter for iPhone</Text>
         </View>
 
         <View style={ styles.separator }></View>
@@ -81,6 +107,9 @@ export default function TweetScreen({ navigation }) {
         </View>
 
         <View style={ styles.separator }></View>
+        </>
+      ) }
+        
 
 
     </View>
