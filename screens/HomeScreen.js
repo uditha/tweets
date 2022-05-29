@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { StyleSheet, Text, View, Button, FlatList,Image, TouchableOpacity,Platform} from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList,Image, TouchableOpacity,Platform, ActivityIndicator} from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -10,7 +10,9 @@ import { formatDistanceToNowStrict } from 'date-fns';
 
 export default function HomeScreen({ navigation }) {
 
-  const [data, setData] = React.useState([]);
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [isRefreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getAllTweets();
@@ -20,10 +22,19 @@ export default function HomeScreen({ navigation }) {
     axios.get('http://localhost/api/tweets')
     .then(res => {
       setData(res.data);
+      setLoading(false);
+      setRefreshing(false);
     })
     .catch(err => {
       console.log(err);
+      setLoading(false);
+      setRefreshing(false);
     });
+  }
+
+  function handleRefresh(){
+    setRefreshing(true);
+    getAllTweets();
   }
 
   function gotoProfile() {
@@ -85,19 +96,32 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={ styles.container }>
-       <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          ItemSeparatorComponent={ () => <View style={styles.tweetSeparator}></View> }
-        />
+
+      { isLoading ? (
+         <ActivityIndicator style={{ marginTop: 8 }}size="large" color="#0000ff" />
+      ) : (
+
+        <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+        ItemSeparatorComponent={ () => <View style={styles.tweetSeparator}></View> }
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
+
+      />
+
+    
+
+      ) }
 
       <TouchableOpacity
         style={styles.newTweetBtn}
         onPress={ () => gotoNewTweet()}
       >
         <AntDesign name="plus" size={24} color="white" />
-      </TouchableOpacity>
+    </TouchableOpacity>
+       
 
     </View>
   );
